@@ -12,6 +12,7 @@ from atoms.CharacterDataset import CharacterDataset
 from molecules.CharacterEmbedding import CharacterEmbedding
 from atoms.LossFunction import compute_loss
 from atoms.TextGenerator import generate_text
+import nltk
 
 from nltk.corpus import brown
 
@@ -19,22 +20,25 @@ if __name__ == "__main__":
     # with open("text.txt", "r") as f:
     #     text = "\n".join(f.readlines())
     text = ""
-    for i in brown.words():
-        text += (i+" ")     
+    words = brown.words()[0:100000]
+    for i in words:
+        text += (i+" ")
+    
+         
 
     # Hyperparameters model
-    vocab_size = 70
-    window_size = 10
-    embedding_dim = 2
-    hidden_dim = 16
-    dense_dim = 32
-    n_layers = 1
+    vocab_size = len(list(set(text)))
+    window_size = 100
+    embedding_dim = 10
+    hidden_dim = 32
+    dense_dim = 64
+    n_layers = 2
     max_norm = 2
 
     # Training config
     n_epochs = 25
     train_val_split = 0.8
-    batch_size = 128
+    batch_size = 1000
     random_state = 13
 
     torch.manual_seed(random_state)
@@ -102,4 +106,4 @@ if __name__ == "__main__":
         emb_history.append(df)
 
 final_df = pd.concat(emb_history)
-final_df.to_csv("res.csv", index=False)
+final_df.to_csv(f'./output/embedding/{vocab_size}_{window_size}_{embedding_dim}_{hidden_dim}_{dense_dim}_{n_layers}_{max_norm}_{n_samples}_{n_epochs}_{batch_size}_{train_loss:.3f}_{val_loss:.3f}.csv', index=False)
