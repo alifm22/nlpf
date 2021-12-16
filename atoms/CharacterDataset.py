@@ -25,17 +25,19 @@ class CharacterDataset(Dataset):
     vocabulary : list
         List of all characters. `len(vocabulary) == vocab_size`.
     """
-    def __init__(self, text, window_size=1, vocab_size=50):
+    def __init__(self, text, window_size=1, vocab_size=5):
         self.text = text.replace("\n", " ")
         self.window_size = window_size
         self.ch2ix = defaultdict(lambda: vocab_size - 1)
+        most_common_ch2ix = {}
+        for i, x in enumerate(Counter(text).most_common()[: (vocab_size - 1)]):
+            most_common_ch2ix.update({x[0]: i}) # x is a tuple (character, frequency)
+                # print(i,x) 
+                # print(most_common_ch2ix)
 
-        most_common_ch2ix = {
-            x[0]: i
-            for i, x in enumerate(Counter(self.text).most_common()[: (vocab_size - 1)])
-        }
         self.ch2ix.update(most_common_ch2ix)
         self.ch2ix["~"] = vocab_size - 1
+        # print(ch2ix)
 
         self.ix2ch = {v: k for k, v in self.ch2ix.items()}
         self.vocabulary = [self.ix2ch[i] for i in range(vocab_size)]
