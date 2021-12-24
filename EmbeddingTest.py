@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # with open("text.txt", "r") as f:
     #     text = "\n".join(f.readlines())
     text = ""
-    words = brown.words()[0:100000]
+    words = brown.words()
     for i in words:
         text += (i+" ")
     
@@ -28,18 +28,18 @@ if __name__ == "__main__":
 
     # Hyperparameters model
     vocab_size = len(list(set(text)))
-    window_size = 100
+    window_size = 10
     embedding_dim = 10
-    hidden_dim = 32
-    dense_dim = 64
-    n_layers = 2
+    hidden_dim = 64
+    dense_dim = 32
+    n_layers = 3 #better than 1,2,4
     max_norm = 2
 
     # Training config
     n_epochs = 25
     train_val_split = 0.8
     batch_size = 1000
-    random_state = 13
+    random_state = 1
 
     torch.manual_seed(random_state)
 
@@ -95,7 +95,11 @@ if __name__ == "__main__":
             100, net, dataset, initial_text=initial_text, random_state=random_state
         )
         print(generated_text)
-
+        counter = 0
+        for word in generated_text.split():
+            if word in names.words():
+                counter += 1
+        print(f'{counter}/{len(generated_text.split())} correct words!')
         # Prepare DataFrame
         weights = net.embedding.weight.detach().clone().numpy()
 
